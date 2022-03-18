@@ -20,7 +20,7 @@ private fun main() {
 
     gondolásokSzáma = gondolásokSzáma + 5
     convinceDipsyke(gondolásokSzáma)
-    talkLikeDipsy("jó, elhiszem")
+    talkLikeDipsy("jó, kecskeszőr")
 
 }
 
