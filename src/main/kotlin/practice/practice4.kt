@@ -9,11 +9,12 @@ fun main() {
 
     val age = 2022 - yearOfBirth
     println("$age éves vagy")
+
     doTheCalculator()
 
     println("Hol akarod kiszámolni a függvények értékeit?")
-    val x = readLine()!!.toInt()
-    printElement(x)
+    val z = readLine()!!.toInt()
+    printElement(z)
 }
 
 fun askForName (): String {
