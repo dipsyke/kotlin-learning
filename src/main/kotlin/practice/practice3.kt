@@ -1,12 +1,16 @@
 package practice
 
 fun main() {
-    printElement(-2)
-    printElement(-1)
-    printElement(0)
-    printElement(1)
-    printElement(2)
-    printElement(3)
+//    printElement(-2)
+//    printElement(-1)
+//    printElement(0)
+//    printElement(1)
+//    printElement(2)
+//    printElement(3)
+
+    for(x in -10..10){
+        printElement(x)
+    }
 }
 
  fun printElement(x: Int) {
