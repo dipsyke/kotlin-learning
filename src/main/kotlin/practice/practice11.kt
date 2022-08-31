@@ -1,6 +1,6 @@
-package practice
+package practice.p11
 
-class Person (val name: String, val age: Int, val colour: String){
+private class Person (val name: String, val age: Int, val colour: String){
     fun introduce(){
         println("Hello, az én nevem $name")
     }
@@ -14,7 +14,7 @@ class Person (val name: String, val age: Int, val colour: String){
     }
 }
 
-class TalkShow (val title: String, val guests: List<Person>){
+private class TalkShow (val title: String, val guests: List<Person>){
     fun doIntro(){
         println("Üdvözöljük kedves nézőinket, ez itt a $title")
         for (guest in guests){
@@ -23,7 +23,7 @@ class TalkShow (val title: String, val guests: List<Person>){
     }
 }
 
-fun printHeadline(person: Person) {
+private fun printHeadline(person: Person) {
     println("Teletubby Talkshow vendég név: ${person.name} kor: ${person.age}  szín: ${person.colour}")
 }
 fun main() {

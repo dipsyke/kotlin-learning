@@ -1,12 +1,12 @@
-package practice
+package practice.p12
 
-class Product(var size: Int? = null, var color: String? = null, var shape: String? = null) {
+private class Product(val name: String,  var size: Int? = null, var color: String? = null, var shape: String? = null) {
     override fun toString(): String {
-        return "{size: $size, color: $color, shape: $shape}"
+        return "{name: ${name}, size: $size, color: $color, shape: $shape}"
     }
 }
 
-class SizeMachine(val targetSize: Int) {
+private class SizeMachine(val targetSize: Int) {
 
     fun customizeProduct(productToWorkOn: Product) {
         println("Working on product: resizing to $targetSize")
@@ -14,27 +14,27 @@ class SizeMachine(val targetSize: Int) {
     }
 }
 
-class ColorMachine(val targetColor: String) {
+private class ColorMachine(val targetColor: String) {
     fun customizeProduct(productToWorkOn: Product) {
         println("Working on product: recoloring to $targetColor")
         productToWorkOn.color = targetColor
     }
 }
 
-class ShapeMachine(val targetShape: String) {
+private class ShapeMachine(val targetShape: String) {
     fun customizeProduct(productToWorkOn: Product) {
         println("Working on product: reshaping to $targetShape")
         productToWorkOn.shape = targetShape
     }
 }
 
-class ProductionLine(
+private class ProductionLine(
     val sizeMachineToUse: SizeMachine,
     val colorMachineToUse: ColorMachine,
     val shapeMachineToUse: ShapeMachine
 ) {
-    fun factorProduct(): Product {
-        val newProduct = Product()
+    fun factorProduct(productName: String): Product {
+        val newProduct = Product(name = productName)
         sizeMachineToUse.customizeProduct(newProduct)
         colorMachineToUse.customizeProduct(newProduct)
         shapeMachineToUse.customizeProduct(newProduct)
@@ -44,7 +44,7 @@ class ProductionLine(
 
 fun main() {
 
-    val p = Product()
+    val p = Product(name = "Kati")
     val sizeMachineSmall = SizeMachine(targetSize = 5)
     val sizeMachineBig = SizeMachine(targetSize = 30)
 
@@ -62,8 +62,15 @@ fun main() {
     println(p)
 
     val productionLineBigRedTriangle = ProductionLine(sizeMachineBig, colorMachineRed, shapeMachineTriangle)
+    val productionLineSmallPurpleRound = ProductionLine(sizeMachineSmall, colorMachinePurple, shapeMachineRound)
 
-    val bigRedTriangle = productionLineBigRedTriangle.factorProduct()
+    val bigRedTriangle = productionLineBigRedTriangle.factorProduct("Linda")
     println("This is a $bigRedTriangle")
+
+    val smallPurpleRound = productionLineSmallPurpleRound.factorProduct("Dóri")
+    println("This is a $smallPurpleRound")
+
+    val smallPurpleRound2 = productionLineSmallPurpleRound.factorProduct("Gábor")
+    println("This is Gábor, a $smallPurpleRound2")
 
 }
