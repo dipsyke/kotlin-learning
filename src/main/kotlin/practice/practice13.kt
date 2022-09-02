@@ -4,7 +4,7 @@ private class Mail(val content: String, val to: String)
 
 private class Person(val name: String, val address: String) {
     fun receive(mailToReceive: Mail) {
-        println("Yay, I'm $name and I've just received a ${mailToReceive.content}")
+        println("Yay, I'm $name, I live in $address and I've just received a ${mailToReceive.content} that was sent to ${mailToReceive.to}")
     }
 }
 
@@ -34,6 +34,7 @@ fun main() {
     val person5 = Person("Rudolf", "Bad Street")
 
     person1.receive(mail1)
+    person2.receive(mail3)
 
 
     val postHu = Post("Hungary", listOf(person1, person2, person3, person4, person5))
