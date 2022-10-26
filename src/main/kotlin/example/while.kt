@@ -1,3 +1,5 @@
+package example
+
 fun main() {
     println("Hali")
     var answer = readLine()!!

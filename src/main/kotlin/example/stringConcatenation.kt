@@ -1,3 +1,5 @@
+package example
+
 private fun main() {
     println("basic string")
 

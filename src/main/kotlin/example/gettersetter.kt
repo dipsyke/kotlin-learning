@@ -1,3 +1,4 @@
+package example
 
 class Tree(val type: String) {
 
@@ -27,7 +28,7 @@ class Tree(val type: String) {
 }
 
 
-fun asd() {
+private fun asd() {
     val tree1 = Tree("alma")
 
     println(tree1.numberOfFruits)

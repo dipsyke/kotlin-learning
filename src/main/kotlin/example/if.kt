@@ -1,3 +1,5 @@
+package example
+
 fun main() {
     val logikaiValami: Boolean = 1 == 1
 

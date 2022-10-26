@@ -1,3 +1,5 @@
+package practice
+
 private fun main() {
     var gondolásokSzáma = 14
 
