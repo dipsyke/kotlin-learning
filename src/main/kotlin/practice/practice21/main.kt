@@ -53,8 +53,8 @@ fun main() {
     picture[9][10] = "x"
 
     for (sor in picture) {
-        for (pixel in sor) {
-            print(pixel)
+        for (pixelString in sor) {
+            print(pixelString) //alapból " " -t rak minden pixelre; bizonyos helyeken felülírva "X"-el
         }
         println()
     }
