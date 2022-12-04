@@ -19,7 +19,6 @@ fun main() {
     while (true) {
         print("Player X, enter the coordinates of the next X (row;column):")
         val xCoordinates: String = readLine()!!
-        xCoordinates.split(";")
         val splitCoordinates = xCoordinates.split(";")
 
         board[splitCoordinates[0].toInt()][splitCoordinates[1].toInt()] = "X"
