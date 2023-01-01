@@ -1,31 +1,30 @@
 package practice.practice23
 
+import net.coobird.thumbnailator.Thumbnails
 import java.awt.Color
 import java.awt.Desktop
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class ColorComponentMultipliers (val redComponent: Double, val greenComponent: Double, val blueComponent: Double) {}
+class ColorComponentMultipliers(val redComponent: Double, val greenComponent: Double, val blueComponent: Double) {}
 
 fun main() {
-
-    //var redComponent: Double = 0.0
-//    var greenComponent: Double = 0.0
-//    var blueComponent: Double = 0.0
 
     print("Add meg a fájl nevét: ")
     val inputFileName = readLine()!!
     print("Add meg a fájl kiterjesztését: ")
     val inputFileExtension = readLine()!!
     //println("Milyen színű képet szeretnél? Add meg a komponensek szorzóit!")
-    println("Milyen színű képet szeretnél? (neon, greyscale, custom)")
+    print("Milyen színű képet szeretnél? (neon, greyscale, custom): ")
     val colorOption = readLine()!!
-    var colorComponentMultipliers = ColorComponentMultipliers(0.0,0.0,0.0)
+    var colorComponentMultipliers = ColorComponentMultipliers(0.0, 0.0, 0.0)
+    var newWidth = 0
+    var newHeight = 0
 
     when (colorOption) {
         "neon" -> {
-            print("Milyen neon színt szeretnél? (red, green, blue)")
+            print("Milyen neon színt szeretnél? (red, green, blue): ")
             val neonColorOption = readLine()!!
             if (neonColorOption == "red") {
                 colorComponentMultipliers = ColorComponentMultipliers(2.55, 0.49, 0.49)
@@ -39,20 +38,38 @@ fun main() {
             }
         }
 
-        "greyscale" -> {var colorComponentGreyscale = ColorComponentMultipliers(1.0, 1.0, 1.0)}
+        "greyscale" -> {
+            colorComponentMultipliers = ColorComponentMultipliers(1.0, 1.0, 1.0)
+        }
 
-//        "custom" -> {
-//            print("Add meg a piros szorzóját: ")
-//            redComponent = readLine()!!.toDouble()
-//            print("Add meg a zöld szorzóját: ")
-//            greenComponent = readLine()!!.toDouble()
-//            print("Add meg a kék szorzóját: ")
-//            blueComponent = readLine()!!.toDouble()
-//        }
-    else ->         println("This is not a valid option")
+        "custom" -> {
+            colorComponentMultipliers = askForCustomColorComponents()
+
+        }
+        else -> println("This is not a valid option")
+    }
+    val bufferedImage: BufferedImage = ImageIO.read(File("C:\\tmp\\$inputFileName.$inputFileExtension"))
+
+    print("Szeretnéd átméretezni a képet? (igen/nem): ")
+    val resizeAnswer = readLine()!!
+    if (resizeAnswer == "igen") {
+        print("Milyen széles legyen az új kép pixelekben?: ")
+        newWidth = readLine()!!.toInt()
+        print("Milyen magas legyen az új kép pixelekben?: ")
+        newHeight = readLine()!!.toInt()
+    } else {
+        newWidth = bufferedImage.width
+        newHeight = bufferedImage.height
     }
 
-    val bufferedImage: BufferedImage = ImageIO.read(File("C:\\tmp\\$inputFileName.$inputFileExtension"))
+
+//    println("Do you want to resize the picture to Instagram standard size? (yes, no)")
+//    val answerInstagramSize = readLine()!!
+//    when (answerInstagramSize) {
+//        "yes" -> {
+//            BufferedImage(100, 80, BufferedImage.TYPE_INT_RGB)
+//        }
+//    }
 
     println("a kép szélessége: ${bufferedImage.width}")
     println("a kép magassága: ${bufferedImage.height}")
@@ -101,8 +118,10 @@ fun main() {
     }
 
 
-    val outputFile = File("C:\\tmp\\$inputFileName-custom.png")
-    ImageIO.write(img, "png", outputFile)
+    val resizedImg = Thumbnails.of(img).size(newWidth, newHeight).asBufferedImage()
+
+    val outputFile = File("C:\\tmp\\$inputFileName-$colorOption.png")
+    ImageIO.write(resizedImg, "png", outputFile)
     println("Csináltam neked egy egyéni képet")
     Desktop.getDesktop().open(outputFile)
 }
@@ -121,3 +140,16 @@ fun createNewBlackPixelMap(width: Int, height: Int): ArrayList<ArrayList<Color>>
     }
     return newPixelMap
 }
+
+
+fun askForCustomColorComponents(): ColorComponentMultipliers {
+    print("Add meg a prios szorzóját: ")
+    val redCustomComponent = readLine()!!.toDouble()
+    print("Add meg a zöld szorzóját: ")
+    val greenCustomComponent = readLine()!!.toDouble()
+    print("Add meg a kék szorzóját: ")
+    val blueCustomComponent = readLine()!!.toDouble()
+
+    return ColorComponentMultipliers(redCustomComponent, greenCustomComponent, blueCustomComponent)
+}
+
