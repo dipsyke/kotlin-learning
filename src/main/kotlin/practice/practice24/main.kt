@@ -1,20 +1,36 @@
 package practice.practice24
 
+val POSSIBLE_FRONT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 fun main() {
-    val board = ArrayList<ArrayList<Card>>()
-
-    repeat(4) {
-        board.add(ArrayList())
+    val boardWidth = 6
+    val boardHeight = 8
+    val numberOfCards = boardHeight*boardWidth
+    val cards = ArrayList<Card>()
+    for (n in 0 until numberOfCards/2) {
+        cards.add(Card("+", POSSIBLE_FRONT_CHARACTERS[n].toString(), true))
+        cards.add(Card("+", POSSIBLE_FRONT_CHARACTERS[n].toString(), true))
     }
 
+    cards.shuffle()
+
+println(cards)
+
+
+
+    val board = ArrayList<ArrayList<Card>>()
+
+    repeat(boardHeight) {
+        board.add(ArrayList())
+    }
+var cardIndex = 0
     for (row in board) {
-        repeat(3) {
-            row.add(Card("+", "A", false))
+        repeat(boardWidth) {
+            row.add(cards[cardIndex])
+            cardIndex += 1
         }
     }
 
-    board[0][1].isFrontVisible=true
 
     printBoard(board)
 
@@ -35,7 +51,7 @@ fun printBoard(board: ArrayList<ArrayList<Card>>) {
     var rowNumber = 0
     for (row in board) {
         print(rowNumber)
-        rowNumber+=1
+        rowNumber += 1
         for (card in row) {
             if (card.isFrontVisible) {
                 print(card.front)
