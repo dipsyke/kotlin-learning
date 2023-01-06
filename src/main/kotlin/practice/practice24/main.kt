@@ -2,11 +2,9 @@ package practice.practice24
 
 val POSSIBLE_FRONT_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-//val POSSIBLE_FRONT_CHARACTERS = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-var pointsPlayer1 = 0
-var pointsPlayer2 = 0
-
 fun main() {
+    var pointsPlayer1 = 0
+    var pointsPlayer2 = 0
     val boardWidth = 3
     val boardHeight = 4
     val numberOfCards = boardHeight * boardWidth
@@ -20,8 +18,6 @@ fun main() {
     }
 
     cards.shuffle()
-
-    println(cards)
 
 
     val board = ArrayList<ArrayList<Card>>()
@@ -45,6 +41,9 @@ fun main() {
         val matchPlayer1 = play1Round(board, "Player1")
         if (matchPlayer1) {
             pointsPlayer1 += 1
+        }
+        if (pointsPlayer1 + pointsPlayer2 >= numberOfCards / 2) {
+            break
         }
         val matchPlayer2 = play1Round(board, "Player2")
         if (matchPlayer2) {
@@ -108,20 +107,35 @@ fun printStateOfGame(pointsPlayer1: Int, pointsPlayer2: Int, round: Int) {
 
 }
 
-fun pickCard(playerName: String, cardToPick: String): Coordinate {
-    print("$playerName, pick your $cardToPick card (x;y): ")
-    val pick1OfPlayer1 = readLine()!!.split(";")
-    return Coordinate(pick1OfPlayer1[0].toInt(), pick1OfPlayer1[1].toInt())
+fun pickCard(playerName: String, cardToPick: String, board: ArrayList<ArrayList<Card>>): Coordinate {
+    val boardWidth = board[0].size
+    val boardHeight = board.size
+    while (true) {
+        print("$playerName, pick your $cardToPick card (x;y): ")
+        val pick1OfPlayer1 = readLine()!!.split(";")
+        val coordinate = Coordinate(pick1OfPlayer1[0].toInt(), pick1OfPlayer1[1].toInt())
+        if (coordinate.x < 0 || coordinate.x >= boardWidth || coordinate.y < 0 || coordinate.y >= boardHeight) {
+            println("Helytelen választás, válassz egy új kártyát (x;y)!")
+            continue
+        }
+        val card = board[coordinate.y][coordinate.x]
+        if (card.isFrontVisible) {
+            println("Ezt a kártyát nem lehet még egyszer kijátszani, válassz egy új kártyát!")
+            continue
+        }
+        return coordinate
+
+    }
 }
 
 fun play1Round(board: ArrayList<ArrayList<Card>>, playerName: String): Boolean {
     printBoard(board)
-    val coordinateOfPick1OfPlayer = pickCard(playerName, cardToPick = "first")
+    val coordinateOfPick1OfPlayer = pickCard(playerName, "first", board)
     val card1OfPlayer = board[coordinateOfPick1OfPlayer.y][coordinateOfPick1OfPlayer.x]
     card1OfPlayer.isFrontVisible = true
     printBoard(board)
 
-    val coordinateOfPick2OfPlayer = pickCard(playerName, "second")
+    val coordinateOfPick2OfPlayer = pickCard(playerName, "second", board)
     val card2OfPlayer = board[coordinateOfPick2OfPlayer.y][coordinateOfPick2OfPlayer.x]
     card2OfPlayer.isFrontVisible = true
     printBoard(board)
@@ -134,6 +148,6 @@ fun play1Round(board: ArrayList<ArrayList<Card>>, playerName: String): Boolean {
         card2OfPlayer.isFrontVisible = false
         println("No match :(")
     }
-    Thread.sleep(1_000)
+    Thread.sleep(2_000)
     return match
 }
