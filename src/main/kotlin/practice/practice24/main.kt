@@ -41,57 +41,17 @@ fun main() {
     while (pointsPlayer1 + pointsPlayer2 < numberOfCards / 2) {
         printStateOfGame(pointsPlayer1, pointsPlayer2, numberOfRounds)
         println()
-        printBoard(board)
-        println("Player1, pick your first card (x;y)")
-        val pick1OfPlayer1 = readLine()!!.split(";")
-        val card1OfPlayer1 = board[pick1OfPlayer1[1].toInt()][pick1OfPlayer1[0].toInt()]
-        card1OfPlayer1.isFrontVisible = true
-        printBoard(board)
 
-        println("Player1, pick your second card (x;y)")
-        val pick2OfPlayer1 = readLine()!!.split(";")
-        val card2OfPlayer1 = board[pick2OfPlayer1[1].toInt()][pick2OfPlayer1[0].toInt()]
-        card2OfPlayer1.isFrontVisible = true
-        printBoard(board)
-
-        if (card1OfPlayer1.front == card2OfPlayer1.front) {
-            println("It's a match!")
+        val matchPlayer1 = play1Round(board, "Player1")
+        if (matchPlayer1) {
             pointsPlayer1 += 1
-        } else {
-            card1OfPlayer1.isFrontVisible = false
-            card2OfPlayer1.isFrontVisible = false
-            println("No match :(")
         }
-        Thread.sleep(1_000)
-
-        printBoard(board)
-        println("Player2, pick your first card (x;y)")
-        val pick1OfPlayer2 = readLine()!!.split(";")
-        val card1OfPlayer2 = board[pick1OfPlayer2[1].toInt()][pick1OfPlayer2[0].toInt()]
-        card1OfPlayer2.isFrontVisible = true
-        printBoard(board)
-
-        println("Player2, pick your second card (x;y)")
-        val pick2OfPlayer2 = readLine()!!.split(";")
-        val card2OfPlayer2 = board[pick2OfPlayer2[1].toInt()][pick2OfPlayer2[0].toInt()]
-        card2OfPlayer2.isFrontVisible = true
-        printBoard(board)
-
-        if (card1OfPlayer2.front == card2OfPlayer2.front) {
-            println("It's a match!")
+        val matchPlayer2 = play1Round(board, "Player2")
+        if (matchPlayer2) {
             pointsPlayer2 += 1
-        } else {
-            card1OfPlayer2.isFrontVisible = false
-            card2OfPlayer2.isFrontVisible = false
-            println("No match :(")
         }
-        println()
-        println()
-        println()
-        println()
 
         numberOfRounds += 1
-        Thread.sleep(1_000)
 
     }
 
@@ -146,4 +106,34 @@ fun printStateOfGame(pointsPlayer1: Int, pointsPlayer2: Int, round: Int) {
         "Round $round\nPlayer1: $pointsPlayer1                      Player2: $pointsPlayer2"
     )
 
+}
+
+fun pickCard(playerName: String, cardToPick: String): Coordinate {
+    print("$playerName, pick your $cardToPick card (x;y): ")
+    val pick1OfPlayer1 = readLine()!!.split(";")
+    return Coordinate(pick1OfPlayer1[0].toInt(), pick1OfPlayer1[1].toInt())
+}
+
+fun play1Round(board: ArrayList<ArrayList<Card>>, playerName: String): Boolean {
+    printBoard(board)
+    val coordinateOfPick1OfPlayer = pickCard(playerName, cardToPick = "first")
+    val card1OfPlayer = board[coordinateOfPick1OfPlayer.y][coordinateOfPick1OfPlayer.x]
+    card1OfPlayer.isFrontVisible = true
+    printBoard(board)
+
+    val coordinateOfPick2OfPlayer = pickCard(playerName, "second")
+    val card2OfPlayer = board[coordinateOfPick2OfPlayer.y][coordinateOfPick2OfPlayer.x]
+    card2OfPlayer.isFrontVisible = true
+    printBoard(board)
+    val match = card1OfPlayer.front == card2OfPlayer.front
+
+    if (match) {
+        println("It's a match!")
+    } else {
+        card1OfPlayer.isFrontVisible = false
+        card2OfPlayer.isFrontVisible = false
+        println("No match :(")
+    }
+    Thread.sleep(1_000)
+    return match
 }
