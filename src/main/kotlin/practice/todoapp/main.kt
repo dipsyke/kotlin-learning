@@ -1,4 +1,4 @@
-package practice.practice25
+package practice.todoapp
 
 fun main() {
     var toDoList = ArrayList<Task>()

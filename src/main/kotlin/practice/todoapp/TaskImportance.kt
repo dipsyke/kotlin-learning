@@ -1,4 +1,4 @@
-package practice.practice25
+package practice.todoapp
 
 enum class TaskImportance(val level: Int, val displayName: String) {
     IMPORTANT(level = 1, "Important"),
