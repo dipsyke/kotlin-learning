@@ -1,4 +1,4 @@
-package practice.practice23
+package practice.keptelenseg
 
 import net.coobird.thumbnailator.Thumbnails
 import java.awt.Color
