@@ -4,6 +4,10 @@ import practice.library.content.Audio
 import practice.library.content.base.Content
 import practice.library.content.Text
 import practice.library.content.Video
+import practice.library.content.base.Listenable
+import practice.library.content.base.Playable
+import practice.library.content.base.Watchable
+import practice.library.content.base.Readable
 
 fun main() {
     val libraryContents = ArrayList<Content>()
@@ -34,9 +38,47 @@ fun main() {
             break
         }
     }
-    for (item in libraryContents) {
-        if (chosenCategory == item.getCategory()) {
-            println("${item.title} (${item.contentType})")
+    for (i in 0 until libraryContents.size) {
+        if (chosenCategory == libraryContents[i].getCategory()) {
+            println("$i: ${libraryContents[i].title} (${libraryContents[i].contentType})")
+        }
+    }
+    print("Please choose which content you want: ")
+    val chosenContentIndex = readLine()!!.toInt()
+    val selectedContent = libraryContents[chosenContentIndex]
+    println("What do you want to do with ${selectedContent.title}?")
+
+    if (selectedContent is Listenable) {
+        println("l: listen")
+    }
+    if (selectedContent is Watchable) {
+        println("w: watch")
+    }
+    if (selectedContent is Readable) {
+        println("r: read")
+    }
+
+    if (selectedContent is Playable) {
+        println("p: play")
+    }
+
+
+    val chosenAction = readLine()!!
+
+    when (chosenAction) {
+        "l" -> {
+            (selectedContent as Listenable).listenToContent()
+        }
+        "w" -> {
+            (selectedContent as Watchable).watchContent()
+        }
+
+        "r" -> {
+            (selectedContent as Readable).readContent()
+        }
+
+        "p" -> {
+            (selectedContent as Playable).playContent()
         }
     }
 }
