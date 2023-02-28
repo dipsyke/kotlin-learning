@@ -38,15 +38,23 @@ fun main() {
             break
         }
     }
+
+    val contentsInChosenCategory = ArrayList<Content>()
     for (i in 0 until libraryContents.size) {
         if (chosenCategory == libraryContents[i].getCategory()) {
-            println("$i: ${libraryContents[i].title} (${libraryContents[i].contentType})")
+            contentsInChosenCategory.add(libraryContents[i])
         }
     }
+    for (i in 0 until contentsInChosenCategory.size) {
+        println("$i: ${contentsInChosenCategory[i].title} (${contentsInChosenCategory[i].contentType})")
+    }
+
     print("Please choose which content you want: ")
     val chosenContentIndex = readLine()!!.toInt()
-    val selectedContent = libraryContents[chosenContentIndex]
+    val selectedContent = contentsInChosenCategory[chosenContentIndex]
+
     println("What do you want to do with ${selectedContent.title}?")
+
 
     if (selectedContent is Listenable) {
         println("l: listen")
