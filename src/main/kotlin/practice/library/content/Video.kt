@@ -5,7 +5,7 @@ import practice.library.content.base.Content
 import practice.library.content.base.Listenable
 import practice.library.content.base.Watchable
 
-class Video(override val title: String, private val contentCategory: ContentCategory) : Watchable, Listenable, Content {
+open class Video(override val title: String, private val contentCategory: ContentCategory) : Watchable, Listenable, Content {
     override val contentType: String = "video"
 
     override fun getCategory(): ContentCategory {

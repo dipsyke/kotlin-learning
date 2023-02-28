@@ -1,13 +1,10 @@
 package practice.library
 
 import practice.library.content.Audio
-import practice.library.content.base.Content
 import practice.library.content.Text
 import practice.library.content.Video
-import practice.library.content.base.Listenable
-import practice.library.content.base.Playable
-import practice.library.content.base.Watchable
-import practice.library.content.base.Readable
+import practice.library.content.YoutubeVideo
+import practice.library.content.base.*
 
 fun main() {
     val libraryContents = ArrayList<Content>()
@@ -17,6 +14,7 @@ fun main() {
     libraryContents.add(Audio(title = "Flowers", ContentCategory.SCIFI))
     libraryContents.add(Text(title = "A könyvkötő", ContentCategory.FANTASY))
     libraryContents.add(Video(title = "Star Wars", ContentCategory.SCIFI))
+    libraryContents.add(YoutubeVideo(title = "TomPeti - Megcsikiztél", ContentCategory.SCIFI, link = "https://www.youtube.com/watch?v=g8H0PdFzRFY"))
 
     print(
         "Hello and welcome to the Dipszykó State Library! Please choose which category are you looking for today: ${
@@ -69,6 +67,9 @@ fun main() {
     if (selectedContent is Playable) {
         println("p: play")
     }
+    if (selectedContent is Shareable) {
+        println("s: share")
+    }
 
 
     val chosenAction = readLine()!!
@@ -87,6 +88,9 @@ fun main() {
 
         "p" -> {
             (selectedContent as Playable).playContent()
+        }
+        "s" -> {
+            (selectedContent as Shareable).shareContent()
         }
     }
 }
