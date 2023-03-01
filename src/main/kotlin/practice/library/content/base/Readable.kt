@@ -1,5 +1,5 @@
 package practice.library.content.base
 
-interface Readable {
+interface Readable: Printable {
     fun readContent()
 }

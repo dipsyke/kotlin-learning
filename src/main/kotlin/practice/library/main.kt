@@ -1,9 +1,6 @@
 package practice.library
 
-import practice.library.content.Audio
-import practice.library.content.Text
-import practice.library.content.Video
-import practice.library.content.YoutubeVideo
+import practice.library.content.*
 import practice.library.content.base.*
 
 fun main() {
@@ -15,6 +12,7 @@ fun main() {
     libraryContents.add(Text(title = "A könyvkötő", ContentCategory.FANTASY))
     libraryContents.add(Video(title = "Star Wars", ContentCategory.SCIFI))
     libraryContents.add(YoutubeVideo(title = "TomPeti - Megcsikiztél", ContentCategory.SCIFI, link = "https://www.youtube.com/watch?v=g8H0PdFzRFY"))
+libraryContents.add(OnlineArticle("Title", ContentCategory.SCIFI, link = "https://webbtelescope.org/contents/media/images/2020/54/4766-Image"))
 
     print(
         "Hello and welcome to the Dipszykó State Library! Please choose which category are you looking for today: ${
@@ -70,6 +68,12 @@ fun main() {
     if (selectedContent is Shareable) {
         println("s: share")
     }
+    if (selectedContent is Downloadable) {
+        println("d: download")
+    }
+    if (selectedContent is Printable) {
+        println("pr: print")
+    }
 
 
     val chosenAction = readLine()!!
@@ -91,6 +95,12 @@ fun main() {
         }
         "s" -> {
             (selectedContent as Shareable).shareContent()
+        }
+        "d" -> {
+            (selectedContent as Downloadable). downloadContent()
+        }
+        "pr" -> {
+            (selectedContent as Printable). printContent()
         }
     }
 }
