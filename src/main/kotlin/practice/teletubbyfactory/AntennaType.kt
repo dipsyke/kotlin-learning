@@ -1,4 +1,4 @@
-package practice.teletubbyFactory
+package practice.teletubbyfactory
 
 enum class AntennaType (val displayName: String) {
     TRIANGLE ("triangle"),
