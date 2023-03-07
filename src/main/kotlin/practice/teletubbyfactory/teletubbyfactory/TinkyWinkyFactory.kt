@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 class TinkyWinkyFactory: TeletubbyFactory {
     init {
-        println("DipsyFactory is being constructed")
+        println("TinkyWinkyFactory is being constructed")
     }
     override fun createNewTeletubby(): Teletubby {
         println("A Tinky Winky is being made...")
