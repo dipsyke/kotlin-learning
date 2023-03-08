@@ -10,9 +10,9 @@ enum class ContentCategory(val displayName: String) {
 
     companion object {
         fun fromDisplayName(name: String): ContentCategory? {
-          return  values().firstOrNull {
-              it.displayName == name
-          }
+            return values().firstOrNull {
+                it.displayName == name
+            }
         }
     }
 }
