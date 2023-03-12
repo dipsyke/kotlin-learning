@@ -14,4 +14,6 @@ fun main() {
 }
 
 
-fun readFileAsLines(fileName: String): List<String> = File(fileName).readLines()
+fun readFileAsLines(fileName: String): List<String> {
+  return  File(fileName).readLines()
+}
