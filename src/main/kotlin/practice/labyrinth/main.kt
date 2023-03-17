@@ -1,10 +1,31 @@
 package practice.labyrinth
 
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.pathString
 
 fun main() {
+    val loadedSave: SaveDto = SavingUtils.load()
+
+    val levelsDirectory: Path = Path.of("C:\\tmp\\labirintus")
+    val allMapFiles = levelsDirectory.listDirectoryEntries()
+
+
+    for (i in loadedSave.currentMapIndex until allMapFiles.size) {
+        println("Starting map: ${allMapFiles[i].pathString}")
+
+        playLevel(allMapFiles[i].pathString)
+
+        SavingUtils.save(SaveDto(currentMapIndex = i + 1))
+    }
+
+}
+
+fun playLevel(level: String) {
     var numberOfKeys = 0
-    val gameMap = readMap("C:\\tmp\\labirintus\\map4.txt")
+
+    val gameMap = readMap(level)
     println(gameMap.board)
 
     var playerPosition = Coordinate(0, 0)
@@ -28,41 +49,48 @@ fun main() {
 
         if (
             wantedPosition.x < gameMap.width && wantedPosition.x >= 0 &&
-            wantedPosition.y < gameMap.height && wantedPosition.y >= 0 &&
-            gameMap.board[wantedPosition.y][wantedPosition.x] != FieldType.WALL
-
+            wantedPosition.y < gameMap.height && wantedPosition.y >= 0
         ) {
-
-            if (gameMap.board[wantedPosition.y][wantedPosition.x] == FieldType.DOOR) {
-                if (numberOfKeys > 0) {
+            when (gameMap.board[wantedPosition.y][wantedPosition.x]) {
+                FieldType.WALL -> println("You cannot step here! This is a wall.")
+                FieldType.EMPTY, FieldType.FINISH, FieldType.START -> playerPosition = wantedPosition
+                FieldType.KEY -> {
                     playerPosition = wantedPosition
-                    --numberOfKeys
+                    ++numberOfKeys
                     gameMap.board[wantedPosition.y][wantedPosition.x] = FieldType.EMPTY
-                    println("You used a key to unlock a door.")
-                } else {
-                    println("You need a key to open this door.")
+                    println("You've collected a key.")
                 }
-                if (gameMap.board[wantedPosition.y][wantedPosition.x] == FieldType.PORTALIN) {
+                FieldType.DOOR -> {
+                    if (numberOfKeys > 0) {
+                        playerPosition = wantedPosition
+                        --numberOfKeys
+                        gameMap.board[wantedPosition.y][wantedPosition.x] = FieldType.EMPTY
+                        println("You used a key to unlock a door.")
+                    } else {
+                        println("You need a key to open this door.")
+                    }
+                }
+                FieldType.PORTALIN -> {
                     val portalOutPosition = getFieldPosition(gameMap.board, FieldType.PORTALOUT)
                     if (portalOutPosition != null) {
                         playerPosition = portalOutPosition
+                    } else {
+                        playerPosition = wantedPosition
                     }
                 }
-            } else {
-                playerPosition = wantedPosition
+                FieldType.PORTALOUT -> {
+                    val portalInPosition = getFieldPosition(gameMap.board, FieldType.PORTALIN)
+                    if (portalInPosition != null) {
+                        playerPosition = portalInPosition
+                    } else {
+                        playerPosition = wantedPosition
+                    }
+                }
             }
         } else {
-            println("You cannot step here!")
+            println("You cannot step here! This would be outside the map.")
         }
 
-        if (gameMap.board[playerPosition.y][playerPosition.x] == FieldType.KEY) {
-            ++numberOfKeys
-            gameMap.board[playerPosition.y][playerPosition.x] = FieldType.EMPTY
-            println("You've collected a key.")
-        }
-//        if (wantedPosition.x>gameMap.width || wantedPosition.y>gameMap.height){
-//            println("You cannot step here!")
-//        }
 
         printBoard(gameMap.board, playerPosition)
         val finishFieldPosition = getFieldPosition(gameMap.board, FieldType.FINISH)
@@ -72,8 +100,6 @@ fun main() {
         }
 
     }
-
-
 }
 
 fun readMap(fileName: String): GameMap {
