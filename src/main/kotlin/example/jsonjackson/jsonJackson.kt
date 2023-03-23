@@ -33,7 +33,7 @@ fun main() {
     println(serializeListToJson(csikiList))
 
 
-    val testJson = """
+    val testJsonThatShouldHaveBeenReadFromAFile = """
         {
             "key1": "val1",
             "key2": [
@@ -47,7 +47,7 @@ fun main() {
 
     val objectMapper = ObjectMapper()
 
-    val processedJsonNode = objectMapper.readTree(testJson)
+    val processedJsonNode = objectMapper.readTree(testJsonThatShouldHaveBeenReadFromAFile)
     processedJsonNode as ObjectNode
     println("\$.key1: " + processedJsonNode.get("key1").asText())
     println("\$.key2[1]: " + processedJsonNode.get("key2").get(1).asInt())
