@@ -1,7 +1,16 @@
 package practice.todoapp
 
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
+import example.jsonfilesave.objectMapper
+import java.io.File
+
+private val SAVE_FILE = File("C:\\tmp\\todo\\save.txt")
+
 fun main() {
-    var toDoList = ArrayList<Task>()
+    val fileText = readTextFromFile()
+    var toDoList = deserializeToDoList(fileText)
     printToDoList(toDoList)
     while (true) {
         print("Add task \"a\";  Change status \"c\";  Remove task \"r\": ")
@@ -23,6 +32,7 @@ fun main() {
             toDoList.removeAt(taskToRemove)
         }
         printToDoList(toDoList)
+        saveToDoListAsFile(serializeToDoList(toDoList))
     }
 
 }
@@ -53,4 +63,49 @@ fun printToDoList(toDoList: ArrayList<Task>) {
         }
     }
     println("------------------")
+}
+
+fun serializeTask(task: Task): ObjectNode {
+    val taskJson = ObjectNode(JsonNodeFactory.instance)
+    taskJson.put("task", task.taskName)
+    taskJson.put("isDone", task.isDone)
+    taskJson.put("importanceLevel", task.importance.level)
+    return taskJson
+}
+
+fun serializeToDoList(toDoList: ArrayList<Task>): String {
+    val toDoListJson = ArrayNode(JsonNodeFactory.instance)
+    for (task in toDoList) {
+        toDoListJson.add(serializeTask(task))
+    }
+    return toDoListJson.toString()
+}
+
+fun deserializeTask(taskJson: ObjectNode): Task {
+    return Task(
+        taskName = taskJson.get("task").asText(),
+        isDone = taskJson.get("isDone").asBoolean(),
+        importance = TaskImportance.fromLevel(taskJson.get("importanceLevel").asInt())
+    )
+}
+
+fun deserializeToDoList(string: String): ArrayList<Task> {
+    val taskListJson = objectMapper.readTree(string) as ArrayNode
+    val taskList = ArrayList<Task>()
+
+    for (taskJson in taskListJson) {
+        taskList.add(deserializeTask(taskJson as ObjectNode))
+    }
+    return taskList
+}
+
+fun saveToDoListAsFile(string: String) {
+    SAVE_FILE.printWriter().use {
+        it.println(string)
+    }
+}
+
+
+fun readTextFromFile(): String {
+    return SAVE_FILE.readText()
 }

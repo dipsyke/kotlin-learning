@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.io.File
 
-val SAVE_FILE = File("C:\\tmp\\jsonpractice\\save.txt")
+private val SAVE_FILE = File("C:\\tmp\\jsonpractice\\save.txt")
 val objectMapper = ObjectMapper()
 
 fun main() {
