@@ -14,7 +14,7 @@ fun main() {
     val productId = readLine()!!.toInt()
 
     val request = HttpRequest.newBuilder()
-        .GET()
+        .method("GET", HttpRequest.BodyPublishers.noBody())
         .uri(URI.create("https://dummyjson.com/products/${productId}"))
         .build()
 
