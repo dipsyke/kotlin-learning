@@ -71,16 +71,21 @@ fun main() {
             }
             Page.ProductDetails -> {
                 println("PAGE: ProductDetails ($chosenProductId)")
-                val responseBody = sendGetRequest("https://dummyjson.com/products/$chosenProductId")
-                val responseJson = objectMapper.readTree(responseBody) as ObjectNode
+                val chosenProduct = getProduct(chosenProductId!!)
+//                val responseBody = sendGetRequest("https://dummyjson.com/products/$chosenProductId")
+//                val responseJson = objectMapper.readTree(responseBody) as ObjectNode
                 println("Here is your chosen product:")
-                println("Name: ${responseJson.get("title").asText()}")
-                println("ID: ${responseJson.get("id").asInt()}")
-                println("Price: ${responseJson.get("price").asInt()}")
-                println("Rating: ${responseJson.get("rating").asInt()}")
-                println("Brand: ${responseJson.get("brand").asText()}")
-                println("Category: ${responseJson.get("category").asText()}")
-                println("Thumbnail: ${responseJson.get("thumbnail").asText()}")
+                println("Name: ${chosenProduct.name} ")
+                println("ID: ${chosenProduct.id}")
+                println("Price: ${chosenProduct.price}")
+                println("Rating: ${chosenProduct.rating}")
+                println("Brand: ${chosenProduct.brand}")
+                println("Category: ${chosenProduct.category}")
+                println("Thumbnail: ${chosenProduct.thumbnail}")
+
+
+
+                println()
 
                 println("Press 'p' to put this item in your cart,\npress 'l' to go the list of products in the chosen category\npress 'c' to view your cart\nor type 'exit' to quit: ")
                 val input = readLine()!!
@@ -91,11 +96,12 @@ fun main() {
                     "c" -> openPage = Page.Cart
                     "p" -> {
                         cart.addProduct(chosenProductId!!)
+
                         println("Your item has been added to your cart, press 'c' to go to cart or press anything else to continue shopping")
                         val answer = readLine()!!
                         if (answer == "c") {
                             openPage = Page.Cart
-                        }else{
+                        } else {
                             openPage = Page.ProductDetails
                         }
                     }
@@ -112,18 +118,26 @@ fun main() {
             Page.Cart -> {
                 println("---------------------------------------------")
                 println("Your cart contains the following items: ")
-                for (item in cart.productIds) {
-                    val responseBody = sendGetRequest("https://dummyjson.com/products/$item")
-                    val responseJson = objectMapper.readTree(responseBody) as ObjectNode
-                    println("$item: ${responseJson.get("title").asText()}")
+                var sumOfPrices = 0
+                for (productId in cart.productIds) {
+                    val product = getProduct(productId)
+                    println("$productId: ${product.name}, $ ${product.price}")
 
+                    sumOfPrices += product.price
                 }
+                println("Your total is: $sumOfPrices")
 
                 println("---------------------------------------------")
-                println("Press 'b' to go back to the product details or type 'exit' to quit: ")
+                println("Press 'r' to remove an item from your cart, 'b' to go back to the product details or type 'exit' to quit: ")
 
                 val input = readLine()!!
                 when (input) {
+                    "r" -> {
+                        println("Type in the ID of the product you wish to remove from your cart: ")
+                        val productIdToRemove = readLine()!!
+                        cart.removeProduct(productIdToRemove.toInt())
+                        println("This item has been removed from your cart")
+                    }
                     "b" -> openPage = Page.ProductDetails
                     "exit" -> openPage = Page.Exit
                 }
@@ -146,4 +160,18 @@ fun sendGetRequest(uri: String): String {
     }
 
     return response.body()
+}
+
+fun getProduct(productID: Int): Product {
+    val responseBody = sendGetRequest("https://dummyjson.com/products/$productID")
+    val responseJson = objectMapper.readTree(responseBody) as ObjectNode
+    return Product(
+        id = responseJson.get("id").asInt(),
+        name = responseJson.get("title").asText(),
+        price = responseJson.get("price").asInt(),
+        rating = responseJson.get("rating").asInt(),
+        brand = responseJson.get("brand").asText(),
+        category = responseJson.get("category").asText(),
+        thumbnail = responseJson.get("thumbnail").asText()
+    )
 }
