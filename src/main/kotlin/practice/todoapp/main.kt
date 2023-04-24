@@ -1,12 +1,13 @@
 package practice.todoapp
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import example.jsonfilesave.objectMapper
 import java.io.File
 
 private val SAVE_FILE = File("C:\\tmp\\todo\\save.txt")
+private val objectMapper = ObjectMapper()
 
 fun main() {
     val fileText = readTextFromFile()

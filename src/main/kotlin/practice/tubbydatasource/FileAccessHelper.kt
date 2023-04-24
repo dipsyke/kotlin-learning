@@ -18,7 +18,7 @@ object FileAccessHelper {
         for ((clazz, table) in storageMap) {
             val tableJson = ObjectNode(JsonNodeFactory.instance)
 
-            tableJson.put("autoIncrementValue", table.autoIncrementer.getCurrentValue())
+            tableJson.put("autoIncrementValue", table.autoIncrementer.currentValue)
             tableJson.put("javaClassCanonicalName", clazz.canonicalName)
             val recordsJson = tableJson.putArray("records")
 

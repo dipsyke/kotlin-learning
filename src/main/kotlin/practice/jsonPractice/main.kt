@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import java.io.File
 
 private val SAVE_FILE = File("C:\\tmp\\jsonpractice\\save.txt")
-val objectMapper = ObjectMapper()
+private val objectMapper = ObjectMapper()
 
 fun main() {
     val cat1 = Cat(

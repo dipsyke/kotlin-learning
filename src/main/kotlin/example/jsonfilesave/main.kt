@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import java.io.File
 
 private val SAVE_FILE = File("C:\\tmp\\jsonfilesave\\save.txt")
-val objectMapper = ObjectMapper()
+private val objectMapper = ObjectMapper()
 
 class Person(
     val name: String,

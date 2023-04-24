@@ -1,14 +1,20 @@
 package practice.simplehttpserver
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.http4k.core.*
 import org.http4k.routing.PathMethod
 import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
-import practice.tubbydatasource.AutoIncrementer
+import practice.tubbydatasource.TubbyDataSource
+import java.io.File
 import java.time.Instant
+import kotlin.random.Random
 
+private val dataSource = TubbyDataSource(File("C:\\tmp\\simplehttpserver\\tubbydatasource.json"))
+private val objectMapper = ObjectMapper()
 
 fun main() {
     val app = getRoutes()
@@ -18,21 +24,26 @@ fun main() {
 fun getRoutes(): HttpHandler {
     var numberOfVisits = 0
     val stringList = ArrayList<String>()
-    val listOfTreeNames = ArrayList<String>()
-    val taskIdAutoIncrementer = AutoIncrementer()
-    val tasks = ArrayList<Task>()
 
-    listOfTreeNames.add("fenyo")
-    listOfTreeNames.add("fuzfa")
-    listOfTreeNames.add("platan")
 
-    val task0 = Task(id = taskIdAutoIncrementer.getNextValue(), name = "cook", isDone = false)
-    val task1 = Task(id = taskIdAutoIncrementer.getNextValue(), name = "read", isDone = true)
-    val task2 = Task(id = taskIdAutoIncrementer.getNextValue(), name = "world domination", isDone = true)
+    if (dataSource.getAll(Tree::class.java).isEmpty()) {
+        dataSource.save(Tree(name = "fenyo", age = 34))
+        dataSource.save(Tree(name = "fuzfa", age = 78))
+        dataSource.save(Tree(name = "platan", age = 120))
+    }
 
-    tasks.add(task0)
-    tasks.add(task1)
-    tasks.add(task2)
+    if (dataSource.getAll(Task::class.java).isEmpty()) {
+        dataSource.save(Task(name = "cook", isDone = false))
+        dataSource.save(Task(name = "read", isDone = true))
+        dataSource.save(Task(name = "world domination", isDone = true))
+    }
+
+    if (dataSource.getAll(Product::class.java).isEmpty()) {
+        dataSource.save(Product(name = "product1"))
+        dataSource.save(Product(name = "product2"))
+        dataSource.save(Product(name = "product3"))
+        dataSource.save(Product(name = "product4"))
+    }
 
     return routes(
         PathMethod("/asd", Method.GET) to {
@@ -77,24 +88,29 @@ fun getRoutes(): HttpHandler {
 
         },
         PathMethod("tree/list", Method.GET) to {
-            return@to Response(Status.OK).body(listOfTreeNames.toString())
+            return@to Response(Status.OK).body(dataSource.getAll(Tree::class.java).toString())
         },
 
         PathMethod("tree/add", Method.PUT) to {
             val requestBody: String = String(it.body.stream.readAllBytes())
-            listOfTreeNames.add(requestBody)
+            val treeToAdd = Tree(name = requestBody.toString(), age = Random.nextInt(1, 100))
+            dataSource.save(treeToAdd)
             return@to Response(Status.OK).body("successfully added tree name")
         },
         PathMethod("tree/search", Method.GET) to {
             val params = explodeParams(it.uri.query)
-            val filteredTreeNames = listOfTreeNames.filter { return@filter it.contains(params["textToSearch"]!!) }
+            val filteredTreeNames =
+                dataSource.getAll(Tree::class.java).filter { return@filter it.name.contains(params["textToSearch"]!!) }
             return@to Response(Status.OK).body(filteredTreeNames.toString())
         },
         PathMethod("tree/remove", Method.DELETE) to {
-            val requestBody: String = String(it.body.stream.readAllBytes())
-            listOfTreeNames.remove(requestBody)
-            println(listOfTreeNames)
-            return@to Response(Status.OK).body("Tree $requestBody has been removed")
+            val treeNameToRemove: String = String(it.body.stream.readAllBytes())
+            val treeEntityToRemove = dataSource.getAll(Tree::class.java).firstOrNull { treeNameToRemove == it.name }
+            if (treeEntityToRemove == null) {
+                return@to Response(Status.NOT_FOUND).body("Tree with name $treeNameToRemove does not exist")
+            }
+            dataSource.deleteById(Tree::class.java, treeEntityToRemove.id!!)
+            return@to Response(Status.OK).body("Tree ${treeEntityToRemove.id} with name $treeNameToRemove has been removed")
         },
         PathMethod("startYoutubeVideo", Method.GET) to {
             val params = explodeParams(it.uri.query)
@@ -116,25 +132,64 @@ fun getRoutes(): HttpHandler {
         },
 
         PathMethod("tasks/list", Method.GET) to {
-            return@to Response(Status.OK).body(tasks.toString())
+            return@to Response(Status.OK).body(dataSource.getAll(Task::class.java).toString())
         },
         PathMethod("tasks/setState", Method.PATCH) to {
-            return@to setState(it, tasks)
+            return@to setState(it)
         },
         PathMethod("tasks/add", Method.PUT) to {
             val requestBody = String(it.body.stream.readAllBytes())
-            val taskToAdd =
-                Task(id = taskIdAutoIncrementer.getNextValue(), name = requestBody.toString(), isDone = false)
-            tasks.add(taskToAdd)
+            val taskToAdd = Task(name = requestBody.toString(), isDone = false)
+
+            dataSource.save(taskToAdd)
             return@to Response(Status.OK).body("successfully added new task with id ${taskToAdd.id}")
         },
         PathMethod("tasks/remove", Method.DELETE) to {
             val taskIdToRemove = String(it.body.stream.readAllBytes()).toInt()
 
-            tasks.removeIf { it.id == taskIdToRemove }
+            dataSource.deleteById(Task::class.java, taskIdToRemove)
 
             return@to Response(Status.OK).body("task has been removed")
+        },
+        PathMethod("testJsonBody", Method.POST) to {
+            val requestBody = String(it.body.stream.readAllBytes())
+
+            val requestJson: ObjectNode = objectMapper.readTree(requestBody) as ObjectNode
+
+            val name = requestJson.get("name")?.asText()
+            val age = requestJson.get("age")?.asInt()
+
+
+            return@to Response(Status.OK).body("name is $name, age is $age")
+        },
+
+        PathMethod("product/list", Method.GET) to {
+            return@to Response(Status.OK).body(dataSource.getAll(Product::class.java).toString())
+        },
+
+        PathMethod("product/add", Method.GET) to {
+            val requestBody = String(it.body.stream.readAllBytes())
+            val productToAdd = Product(name = requestBody)
+            dataSource.save(productToAdd)
+            return@to Response(Status.OK).body("Product with the name $productToAdd has been added")
+        },
+
+        PathMethod("product/remove", Method.DELETE) to {
+            val productIdToRemove = String(it.body.stream.readAllBytes()).toInt()
+            val productName = dataSource.getById(Product::class.java, productIdToRemove)!!.name
+
+            dataSource.deleteById(Product::class.java, productIdToRemove)
+
+            return@to Response(Status.OK).body("Product ${productName} with ID $productIdToRemove has been removed")
+        },
+
+        PathMethod("product/search", Method.GET) to {
+            val params = explodeParams(it.uri.query)
+            val filteredProductNames = dataSource.getAll(Product::class.java)
+                .filter { return@filter it.name.contains(params["productToSearch"]!!) }
+            return@to Response(Status.OK).body(filteredProductNames.toString())
         }
+
     )
 
 }
@@ -184,20 +239,20 @@ fun startServer(app: HttpHandler) {
     println("Server started on port: ${server.port()}")
 }
 
-fun setState(request: Request, tasks: ArrayList<Task>): Response {
+fun setState(request: Request): Response {
     val params = explodeParams(request.uri.query)
     val taskId = params["taskId"]!!.toInt()
     val newState = params["newState"]!!
-    for (task in tasks) {
-        if (taskId == task.id) {
-            if (newState == "true") {
-                task.isDone = true
-            } else if (newState == "false") {
-                task.isDone = false
-            }
-        }
 
+    val task = dataSource.getById(Task::class.java, taskId)!!
+
+    if (newState == "true") {
+        task.isDone = true
+    } else if (newState == "false") {
+        task.isDone = false
     }
+
+    dataSource.save(task)
 
     return Response(Status.OK).body("state has been changed to $newState")
 }
